@@ -1,16 +1,33 @@
 from sqlalchemy import create_engine, text
 
-engine = create_engine(
-    "mssql+pyodbc://localhost\\SQLEXPRESS/RetailMart?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
-)
+_engine = None
+_connection_string = None
 
-def test_connection():
-    with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-        print("✅ Database connected successfully!")
+def set_engine(connection_string: str):
+    global _engine, _connection_string
+    _engine = None  # pehle reset karo
+    _connection_string = connection_string
+    _engine = create_engine(connection_string)
+
+def get_engine():
+    if _engine is None:
+        raise Exception("No database connected!")
+    return _engine
+
+def test_connection(connection_string: str) -> bool:
+    try:
+        engine = create_engine(connection_string)
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        set_engine(connection_string)
+        return True
+    except Exception as e:
+        print(f"Connection error: {e}")
+        return False
 
 def get_schema():
     schema = {}
+    engine = get_engine()
     with engine.connect() as conn:
         tables = conn.execute(text(
             "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'"
@@ -24,8 +41,3 @@ def get_schema():
             )).fetchall()
             schema[table] = [(col[0], col[1]) for col in columns]
     return schema
-
-if __name__ == "__main__":
-    test_connection()
-    print(get_schema())
-    
