@@ -4,6 +4,7 @@
 
 
 🔥 Features:
+
 Connect any database (SQL Server, PostgreSQL, MySQL, SQLite)
 AI Agent — generates SQL, executes, and self-corrects errors automatically
 Query History with search and filter
@@ -13,4 +14,5 @@ Export results to CSV
 
 
 🛠️ Tech Stack:
+
 React + Vite + TailwindCSS | FastAPI | LLaMA 3.3-70B (Groq) | LangChain | SQL Server
